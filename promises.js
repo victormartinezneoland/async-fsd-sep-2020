@@ -139,3 +139,36 @@ Promise.race([helloPromise(), goodbyePromise()])
         console.log('La respuesta más rápida es', response);
     })
     .catch(error => console.log('Error:', error))
+
+
+
+// Promesa en la que hago una petición HTTP
+
+const cityFromDom = 'Madrid';
+
+const getWeatherData = (city) => {
+    return new Promise((resolve, reject) => {
+        const apiKey = '6bdf06d68edc907bb1bed5e1cfa70637';
+
+        let weatherRequest = new XMLHttpRequest();
+
+        weatherRequest.open('GET', `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+        setTimeout(() => weatherRequest.send(), 3000);
+
+        weatherRequest.onload = function() {
+            if(weatherRequest.status !== 200) {
+                // console.log(`Ha ocurrido un error con codigo ${weatherRequest.status} y mensaje ${weatherRequest.statusText}`);
+                reject(`${weatherRequest.status} - ${weatherRequest.statusText}`);
+            } else {
+                const parsedResponse = JSON.parse(weatherRequest.response);
+                // console.log('RESPUESTA PARSEADA', parsedResponse);
+                resolve(parsedResponse);
+            }
+        };
+    });
+};
+
+getWeatherData(cityFromDom)
+    .then(response => console.log('RESPONSE IS', response))
+    .catch(error => console.log(error));
+
